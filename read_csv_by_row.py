@@ -47,7 +47,7 @@ with open(r'scraped group/Catalyst Community Reviewers, Moderators, Advisors (co
 
 
     # Find the input box by ID
-    input_box = WebDriverWait(driver, 30).until(
+    input_box = WebDriverWait(driver, 600).until(
         EC.presence_of_element_located((By.ID, 'telegram-search-input'))
     )
 

@@ -28,9 +28,22 @@ def prepare_image(driver):
         )
         print("set image in except")
 
-    file_input.click()
-    pyautogui.hotkey('ctrl', 'v')
-    print("preparing the image finished")
+    try:
+        file_input.click()
+        file_input.send_keys(" ")
+        time.sleep(1)  # Adjust the delay if needed
+        print("trying to paste image")
+        # pyautogui.hotkey('ctrl', 'v')
+        pyautogui.hotkey('command', 'v')
+        print("preparing the image finished")
+
+        time.sleep(2)  # Adjust the delay if needed
+        return True
+    
+    except Exception as e:
+        print(f"Error prepareing image: {str(e)}")
+        return False
+    
 
 
 def prepare_message(driver):
@@ -46,17 +59,23 @@ def prepare_message(driver):
         )
         print("set text in except")
 
-    editable_message_text_modal.click()
-    time.sleep(2)
+    try:
+        editable_message_text_modal.click()
+        time.sleep(2)
 
-    # Set inner HTML of the element
-    driver.execute_script("arguments[0].innerHTML = arguments[1];", editable_message_text_modal, body_selector())
-    time.sleep(2)
+        # Set inner HTML of the element
+        driver.execute_script("arguments[0].innerHTML = arguments[1];", editable_message_text_modal, body_selector())
+        time.sleep(2)
 
-    editable_message_text_modal.send_keys(" ")
-    time.sleep(2)
+        editable_message_text_modal.send_keys(" ")
+        print("preparing the message finished")
+        time.sleep(2)
+        return True
 
-    print("preparing the message finished")
+    except Exception as e:
+        print(f"Error prepareing message: {str(e)}")
+        return False
+
 
     # editable_message_text_modal.send_keys("\n")
 
@@ -66,58 +85,63 @@ def click_send_button(driver):
         editable_message_text_modal = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, 'editable-message-text-modal'))
         )
-        print("set text in try")
     except:  
         editable_message_text_modal = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, '.input-scroller-content'))
         )
-        print("set text in except")
 
     editable_message_text_modal.send_keys("\n")
     print("sending the message finished")    
-
+    return True
 
 def send_message_to_user(row_number, username, user_id, name, driver):
-    
-    print("searching the user started")
-    # Find the input box by ID
-    input_box = WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.ID, 'telegram-search-input'))
-    )
+    try:
+        print("searching the user started")
+        # Find the input box by ID
+        input_box = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.ID, 'telegram-search-input'))
+        )
 
-    # Type the username into the input box
-    input_box.clear()
-    input_box.send_keys(username)
+        # Type the username into the input box
+        input_box.clear()
+        input_box.send_keys(username)
 
-    # Simulate loading time (20 seconds)
-    time.sleep(10)
+        # Simulate loading time (20 seconds)
+        time.sleep(10)
 
 
 
-    avatar_divs = WebDriverWait(driver, 30).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ListItem.chat-item-clickable.search-result .Avatar.size-large')))
+        avatar_divs = WebDriverWait(driver, 30).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ListItem.chat-item-clickable.search-result .Avatar.size-large')))
+        print("user found")
 
-    # Loop through each Avatar div
-    for avatar_div in avatar_divs:
-        # Extract the data-peer-id attribute value
-        peer_id = avatar_div.get_attribute('data-peer-id')
-        
-        # Check if the peer_id matches the target_peer_id
-        if peer_id == user_id:
-            # Click the ListItem
-            avatar_div.click()
-            print(f"User {peer_id} avatar clicked")
-            break  # Break out of the loop once the desired item is clicked
+        # Loop through each Avatar div
+        for avatar_div in avatar_divs:
+            # Extract the data-peer-id attribute value
+            peer_id = avatar_div.get_attribute('data-peer-id')
+            
+            # Check if the peer_id matches the target_peer_id
+            if peer_id == user_id:
+                # Click the ListItem
+                avatar_div.click()
+                print(f"User {peer_id} avatar clicked")
+                break  # Break out of the loop once the desired item is clicked
 
-    # Simulate loading time (20 seconds)
-    time.sleep(5)
-    prepare_image(driver)
-    time.sleep(3)
-    prepare_message(driver)
-    click_send_button(driver)
-    time.sleep(5)
-    with open('sent_to.txt', 'a') as file:
-        file.write(f"\n({user_id}) {username} {name}")
-        print(f"Messages sent successfully to {name} ({user_id})")
+        # Simulate loading time (20 seconds)
+        time.sleep(5)
+        is_image_prepared = prepare_image(driver)
+        time.sleep(3)
+        if is_image_prepared :
+            is_message_prepared = prepare_message(driver)
 
-    sleep_duration = random.uniform(5 * 60, 7 * 60)
+            if is_image_prepared and is_message_prepared:
+                is_sent = click_send_button(driver)
+                with open('sent_to.txt', 'a') as file:
+                    file.write(f"\n({user_id}) {username} {name}")
+                    print(f"Messages sent successfully to {name} ({user_id})")
+
+                sleep_duration = random.uniform(5 * 60, 7 * 60)
+                time.sleep(sleep_duration)
+
+    except Exception as e:
+        print(f"Error on search user: {str(e)}")
