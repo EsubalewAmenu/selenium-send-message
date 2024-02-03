@@ -92,6 +92,12 @@ def click_send_button(driver):
 
     editable_message_text_modal.send_keys("\n")
     print("sending the message finished")    
+
+    # sleep until the message sent/fail. use WebDriverWait to expect emoji return 
+    
+    # check if telegram is not marking the message red
+    # if it shows right emoji return true
+    # else return false
     return True
 
 def send_message_to_user(row_number, username, user_id, name, driver):
