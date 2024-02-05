@@ -33,6 +33,8 @@ def prepare_image(driver):
         file_input.send_keys(" ")
         time.sleep(1)  # Adjust the delay if needed
         print("trying to paste image")
+
+        # get os type and add if condition here
         # pyautogui.hotkey('ctrl', 'v')
         pyautogui.hotkey('command', 'command', 'v')
         print("preparing the image finished")
@@ -48,6 +50,10 @@ def prepare_image(driver):
 
 def prepare_message(driver):
     print("preparing the message started")
+
+    # check if the image modal is visibele before pasting the content
+    # return false if not visible
+
     try:
         editable_message_text_modal = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, 'editable-message-text-modal'))
