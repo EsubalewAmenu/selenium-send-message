@@ -34,7 +34,7 @@ def prepare_image(driver):
         time.sleep(1)  # Adjust the delay if needed
         print("trying to paste image")
         # pyautogui.hotkey('ctrl', 'v')
-        pyautogui.hotkey('command', 'v')
+        pyautogui.hotkey('command', 'command', 'v')
         print("preparing the image finished")
 
         time.sleep(2)  # Adjust the delay if needed
@@ -96,8 +96,10 @@ def click_send_button(driver):
     # sleep until the message sent/fail. use WebDriverWait to expect emoji return 
     
     # check if telegram is not marking the message red
+    # click on esc to out from current user chat page (the the system will not reply incase if the user saw and reply to the message)
     # if it shows right emoji return true
     # else return false
+    # if 3 fails show change telegram login account and stop trying to send
     return True
 
 def send_message_to_user(row_number, username, user_id, name, driver):
